@@ -13,10 +13,12 @@ export async function POST(req: Request) {
 
   const user = users.find((u:User) => u.email === email && u.password === password);
 
+  // Si el usuario no existe devuelve mensaje de error
   if (!user) {
     return NextResponse.json({ message: "Credenciales incorrectas" }, { status: 401 });
   }
 
+  // Si existe devuelve el token encriptado
   const token = jwt.sign({ id: user.id, role: user.role }, SECRET, { expiresIn: "1h" });
 
   return NextResponse.json({ token, user });

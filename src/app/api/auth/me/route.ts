@@ -14,6 +14,7 @@ export async function GET() {
       return NextResponse.json({ message: "No autenticado" }, { status: 401 })
     }
 
+    // En caso de recibir un token invalido devuelve error
     try {
       const decoded = jwt.verify(token, JWT_SECRET)
       return NextResponse.json(decoded)

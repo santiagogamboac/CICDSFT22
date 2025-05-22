@@ -7,10 +7,12 @@ const SECRET = "secreto_super_seguro";
 export function middleware(req: NextRequest) {
   const token = req.cookies.get("token")?.value;
 
+  // Si no existe el token lo redirecciona al inicio de sesion
   if (!token) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
+  // En caso de recibir un token invalido devuelve error
   try {
     const decoded = jwt.verify(token, SECRET) as { role: string };
 
