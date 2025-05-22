@@ -1,15 +1,15 @@
 import { NextResponse } from "next/server"
 import fs from "fs"
 import path from "path"
-import { v4 as uuidv4 } from "uuid"
+import { createClient } from "../../../../utils/supabase/client"
 
 interface User {
-    id: string;
-    name: string;
-    email: string;
-    password: string; 
-  }
-  
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+}
+
 
 // Ruta al archivo JSON de usuarios
 const usersFilePath = path.join(process.cwd(), "src", "data", "users.json")
@@ -68,11 +68,17 @@ const saveUsers = (users: User[]) => {
 
 export async function GET() {
   try {
-    const users:User[] = getUsers()
 
+    const supabase = createClient()
+    const { data, error } = await supabase.from("users").select("*")
+
+    if (error) {
+      console.error("Error fetching users:", error)
+      return NextResponse.json({ message: "Error interno del servidor" }, { status: 500 })
+    }
     // Filtrar información sensible como contraseñas
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const safeUsers = users.map(({ password, ...user }) => user)
+    const safeUsers = data.map(({ password, ...user }) => user)
 
     return NextResponse.json(safeUsers)
   } catch (error) {
@@ -101,12 +107,31 @@ export async function POST(request: Request) {
 
     // Crear nuevo usuario
     const newUser = {
-      id: uuidv4(),
+      // id: uuidv4(),
       name,
       email,
       password, // En producción, esto estaría hasheado
       role,
     }
+    const supabase = createClient()
+    const res = await supabase.auth.admin.createUser({
+      email,
+      password,
+    });
+    if (!res.error) {
+      const { error } = await supabase
+        .from("users")
+        .insert({
+          name,
+          email,
+          password,
+          role
+        });
+      console.log("res", res)
+      console.log("error", error)
+      return NextResponse.json(error, { status: 201 })
+    }
+
 
     users.push(newUser)
     saveUsers(users)

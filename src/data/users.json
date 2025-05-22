@@ -12,5 +12,11 @@
     "email": "view@example.com",
     "password": "password123",
     "role": "viewer"
+  },
+  {
+    "name": "usertest",
+    "email": "santi@gmail.com",
+    "password": "password123",
+    "role": "user"
   }
 ]
