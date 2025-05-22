@@ -53,12 +53,13 @@ export default function UsersPage() {
     checkAuth()
     fetchUsers()
   }, [router])
-//Función para obtener los usuarios desde la API
+  //Función para obtener los usuarios desde la API
   const fetchUsers = async () => {
     try {
       const res = await fetch("/api/users")
       if (res.ok) {
         const data = await res.json()
+        console.log("Fetched users:", data)
         setUsers(data)
       } else {
         console.error("Error fetching users")
@@ -137,7 +138,7 @@ export default function UsersPage() {
       console.error("Error:", error)
     }
   }
-//Función para eliminar un usuario
+  //Función para eliminar un usuario
   const handleDeleteUser = async (userId: string) => {
     if (!confirm("¿Estás seguro de que deseas eliminar este usuario?")) return
 
@@ -158,9 +159,9 @@ export default function UsersPage() {
 
   const filteredUsers = users.filter(
     (user) =>
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.role.toLowerCase().includes(searchTerm.toLowerCase()),
+      (user.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (user.email?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (user.role?.toLowerCase() || '').includes(searchTerm.toLowerCase())
   )
 
   if (loading) {
@@ -246,13 +247,12 @@ export default function UsersPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          user.role === "admin"
-                            ? "bg-purple-100 text-purple-800"
-                            : user.role === "user"
-                              ? "bg-blue-100 text-blue-800"
-                              : "bg-green-100 text-green-800"
-                        }`}
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.role === "admin"
+                          ? "bg-purple-100 text-purple-800"
+                          : user.role === "user"
+                            ? "bg-blue-100 text-blue-800"
+                            : "bg-green-100 text-green-800"
+                          }`}
                       >
                         {user.role === "admin" ? "Administrador" : user.role === "user" ? "Usuario" : "Visualizador"}
                       </span>
@@ -290,11 +290,10 @@ export default function UsersPage() {
               <div className="font-medium">{user.name}</div>
               <div className="text-sm text-gray-500">{user.email}</div>
               <div className="mt-2">
-                <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                  user.role === "admin" ? "bg-purple-100 text-purple-800" : 
-                  user.role === "user" ? "bg-blue-100 text-blue-800" : 
-                  "bg-green-100 text-green-800"
-                }`}>
+                <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${user.role === "admin" ? "bg-purple-100 text-purple-800" :
+                  user.role === "user" ? "bg-blue-100 text-blue-800" :
+                    "bg-green-100 text-green-800"
+                  }`}>
                   {user.role === "admin" ? "Administrador" : user.role === "user" ? "Usuario" : "Visualizador"}
                 </span>
               </div>
@@ -313,7 +312,7 @@ export default function UsersPage() {
         </div>
       </div>
 
-    
+
       {isAdmin && (
         <Modal
           isOpen={showAddModal}
