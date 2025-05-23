@@ -1,0 +1,37 @@
+name: Test and Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Paso 1: Checkout
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      # Paso 2: Setup Node
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      # Paso 3: Install dependencies
+      - name: Install dependencies
+        run: npm ci
+        
+      # Paso 4: Run tests
+      - name: Run tests
+        run: npm run test
+        
+      # Paso 5: Build test
+      - name: Test build
+        run: npm run build
+        
+      # Paso 6: Deploy to Vercel (solo si llega hasta aquí)
+      - name: Deploy to Vercel
+        run: vercel --prod --yes --token="${{ secrets.VERCEL_TOKEN }}"

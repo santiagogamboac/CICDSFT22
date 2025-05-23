@@ -56,6 +56,8 @@ export async function GET() {
 //   password,
 export async function POST(request: Request) {
   try {
+
+    console.log(request);
     const { name, email, role, password = "123" } = await request.json()
 
     // Validaciones básicas
